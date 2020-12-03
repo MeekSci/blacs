@@ -217,7 +217,7 @@ def define_state(allowed_modes,queue_state_indefinitely,delete_stale_states=Fals
     
         
 class Tab(object):
-
+    TIME_OUT_VALUE = None
     ICON_OK = ':/qtutils/fugue/tick'
     ICON_BUSY = ':/qtutils/fugue/hourglass'
     ICON_ERROR = ':/qtutils/fugue/exclamation'
@@ -809,17 +809,17 @@ class Tab(object):
                             # Send the command to the worker
                             to_worker = workers[worker_process][1]
                             from_worker = workers[worker_process][2]
-                            to_worker.put(worker_arg_list)
+                            to_worker.put(worker_arg_list, timeout = self.TIME_OUT_VALUE)
                             self.state = '%s (%s)'%(worker_function,worker_process)
                             # Confirm that the worker got the message:
                             logger.debug('Waiting for worker to acknowledge job request')
-                            success, message, results = from_worker.get()
+                            success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
                             if not success:
                                 logger.info('Worker reported failure to start job')
                                 raise Exception(message)
                             # Wait for and get the results of the work:
                             logger.debug('Worker reported job started, waiting for completion')
-                            success,message,results = from_worker.get()
+                            success,message,results = from_worker.get(timeout = self.TIME_OUT_VALUE)
                             if not success:
                                 logger.info('Worker reported exception during job')
                                 now = time.strftime('%a %b %d, %H:%M:%S ',time.localtime())
@@ -862,6 +862,9 @@ class Tab(object):
         
         
 class Worker(Process):
+    
+    TIME_OUT_VALUE = None
+    
     def init(self):
         # To be overridden by subclasses
         pass
@@ -903,7 +906,7 @@ class Worker(Process):
         while True:
             # Get the next task to be done:
             self.logger.debug('Waiting for next job request')
-            funcname, args, kwargs = self.from_parent.get()
+            funcname, args, kwargs = self.from_parent.get(timeout = self.TIME_OUT_VALUE)
             self.logger.debug('Got job request %s' % funcname)
             try:
                 # See if we have a method with that name:
@@ -915,7 +918,7 @@ class Worker(Process):
                 message = traceback.format_exc()
                 self.logger.error('Couldn\'t start job:\n %s'%message)
             # Report to the parent whether method lookup was successful or not:
-            self.to_parent.put((success,message,None))
+            self.to_parent.put((success,message,None),timeout = self.TIME_OUT_VALUE)
             if success:
                 # Try to do the requested work:
                 self.logger.debug('Starting job %s'%funcname)
@@ -942,7 +945,7 @@ class Worker(Process):
                     results = None
                 # Report to the parent whether work was successful or not,
                 # and what the results were:
-                self.to_parent.put((success,message,results))
+                self.to_parent.put((success,message,results),timeout = self.TIME_OUT_VALUE)
 
 
 class PluginTab(object):
