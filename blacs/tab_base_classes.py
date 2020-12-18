@@ -1015,10 +1015,10 @@ class Worker(Process):
                             raise TimeoutError('Communication timed out in worker.')
                 else:
                     try:
-                        self.to_parent.put((success,message,None),timeout = self.TIME_OUT_VALUE)
+                        self.to_parent.put((success,message,results),timeout = self.TIME_OUT_VALUE)
                     except TimeoutError:
                         try:
-                             self.to_parent.put((success,message,None),timeout = self.TIME_OUT_VALUE)
+                             self.to_parent.put((success,message,results),timeout = self.TIME_OUT_VALUE)
                         except TimeoutError as e:
                             raise TimeoutError('Communication timed out in worker.')
 
