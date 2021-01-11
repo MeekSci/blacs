@@ -217,6 +217,7 @@ def define_state(allowed_modes,queue_state_indefinitely,delete_stale_states=Fals
 
 
 class Tab(object):
+
     TIME_OUT_VALUE = None
     ICON_OK = ':/qtutils/fugue/tick'
     ICON_BUSY = ':/qtutils/fugue/hourglass'
@@ -294,6 +295,7 @@ class Tab(object):
 
         # Restore settings:
         self.restore_builtin_save_data(self.settings.get('saved_data', {}))
+
 
         # This should be done beofre the main_loop starts or else there is a race condition as to whether the
         # self._mode variable is even defined!
@@ -686,6 +688,8 @@ class Tab(object):
         self.finalise_close_tab(currentpage)
         inmain(self.clean_ui_on_restart)
         inmain(self.finalise_restart, currentpage)
+
+
 
     def clean_ui_on_restart(self):
         # Clean up UI
