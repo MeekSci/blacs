@@ -16,24 +16,9 @@
   <property name="frameShape">
    <enum>QFrame::NoFrame</enum>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>3</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>3</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,0,0,0">
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,0">
      <property name="spacing">
       <number>6</number>
      </property>
@@ -63,6 +48,20 @@
       </widget>
      </item>
      <item>
+      <widget class="QToolButton" name="ForceUSB_restart">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Command Windows to re-initialize specified device hardware instantiation.&lt;/p&gt;&lt;p&gt;Then Restart tab and reinitialise device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../../../Users/rubidium/Anaconda3/Lib/site-packages/qtutils/icons/icons.qrc">
+         <normaloff>:/qtutils/fugue/arrow-circle-double.png</normaloff>:/qtutils/fugue/arrow-circle-double.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QToolButton" name="button_clear_smart_programming">
        <property name="toolTip">
         <string>Clear smart-programming cache and reprogram
@@ -72,7 +71,7 @@ all buffered instructions next shot</string>
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../../../usr/local/lib/python2.7/dist-packages/qtutils/icons/icons.qrc">
+        <iconset resource="../../../Users/rubidium/Anaconda3/Lib/site-packages/qtutils/icons/icons.qrc">
          <normaloff>:/qtutils/fugue/brain--minus.png</normaloff>:/qtutils/fugue/brain--minus.png</iconset>
        </property>
       </widget>
@@ -86,7 +85,7 @@ all buffered instructions next shot</string>
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../../../usr/local/lib/python2.7/dist-packages/qtutils/icons/icons.qrc">
+        <iconset resource="../../../Users/rubidium/Anaconda3/Lib/site-packages/qtutils/icons/icons.qrc">
          <normaloff>:/qtutils/fugue/terminal.png</normaloff>:/qtutils/fugue/terminal.png</iconset>
        </property>
        <property name="checkable">
@@ -103,14 +102,14 @@ all buffered instructions next shot</string>
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="../../../../usr/local/lib/python2.7/dist-packages/qtutils/icons/icons.qrc">
+        <iconset resource="../../../Users/rubidium/Anaconda3/Lib/site-packages/qtutils/icons/icons.qrc">
          <normaloff>:/qtutils/fugue/arrow-circle.png</normaloff>:/qtutils/fugue/arrow-circle.png</iconset>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item>
+   <item row="1" column="0">
     <widget class="QSplitter" name="splitter">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -129,13 +128,31 @@ all buffered instructions next shot</string>
      </property>
      <widget class="QWidget" name="notresponding" native="true">
       <layout class="QVBoxLayout" name="verticalLayout">
-       <property name="margin">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
         <number>0</number>
        </property>
        <item>
         <widget class="QWidget" name="notresponding_sub" native="true">
          <layout class="QVBoxLayout" name="verticalLayout_4">
-          <property name="margin">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
            <number>0</number>
           </property>
           <item>
@@ -183,7 +200,7 @@ all buffered instructions next shot</string>
                <string/>
               </property>
               <property name="icon">
-               <iconset resource="../../../../usr/local/lib/python2.7/dist-packages/qtutils/icons/icons.qrc">
+               <iconset resource="../../../Users/rubidium/Anaconda3/Lib/site-packages/qtutils/icons/icons.qrc">
                 <normaloff>:/qtutils/fugue/cross.png</normaloff>:/qtutils/fugue/cross.png</iconset>
               </property>
              </widget>
@@ -210,12 +227,21 @@ all buffered instructions next shot</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>879</width>
-         <height>358</height>
+         <width>867</width>
+         <height>336</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="margin">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
          <number>0</number>
         </property>
         <item>
@@ -224,7 +250,16 @@ all buffered instructions next shot</string>
            <bool>true</bool>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -260,7 +295,16 @@ all buffered instructions next shot</string>
         <item>
          <widget class="QWidget" name="device_controls" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_8">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
@@ -274,7 +318,7 @@ all buffered instructions next shot</string>
      </widget>
     </widget>
    </item>
-   <item>
+   <item row="2" column="0">
     <layout class="QHBoxLayout" name="state_label_layout">
      <property name="spacing">
       <number>0</number>
@@ -304,6 +348,7 @@ all buffered instructions next shot</string>
  </widget>
  <resources>
   <include location="../../../../usr/local/lib/python2.7/dist-packages/qtutils/icons/icons.qrc"/>
+  <include location="../../../Users/rubidium/Anaconda3/Lib/site-packages/qtutils/icons/icons.qrc"/>
  </resources>
  <connections/>
 </ui>
