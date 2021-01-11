@@ -683,12 +683,12 @@ class Tab(object):
         self._restart_thread = inthread(self.continue_restart, currentpage)
 
     def restartUSB(self, *args):
+        self._tab_icon = self.ICON_BUSY
+        self.set_tab_icon_and_colour()
         In_result, done = invoke_in_main.inmain(QInputDialog.getText, self._ui.ForceUSB_restart, 'Input Dialog', 'Enter Device ID:', QLineEdit.Normal, self.DEV_ID)
         if In_result != "" and In_result != None:
             self.DEV_ID = In_result
         if done and self.DEV_ID != None and self.DEV_ID != "":
-            self._tab_icon = self.ICON_BUSY
-            self.set_tab_icon_and_colour()
             import subprocess
             import platform
             import time
@@ -729,6 +729,8 @@ class Tab(object):
             if os.path.exists(_WindowsSdkDir):
                 command = '"' + _WindowsSdkDir + '" restart *' + self.DEV_ID + '*'
                 result = subprocess.run(command, shell=True)
+                self._tab_icon = self.ICON_BUSY
+                self.set_tab_icon_and_colour()
                 threading.Event().wait(15)
                 self.logger.info('Restart attempted. Result: %s', result)
                 self._tab_icon = self.ICON_OK
