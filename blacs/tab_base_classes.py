@@ -11,6 +11,7 @@
 #                                                                   #
 #####################################################################
 from zprocess import Process, Interruptor, Interrupted
+from zprocess.utils import TimeoutError
 import time
 import sys
 import threading
@@ -217,13 +218,12 @@ def define_state(allowed_modes,queue_state_indefinitely,delete_stale_states=Fals
 
 
 class Tab(object):
-
-    TIME_OUT_VALUE = None
     ICON_OK = ':/qtutils/fugue/tick'
     ICON_BUSY = ':/qtutils/fugue/hourglass'
     ICON_ERROR = ':/qtutils/fugue/exclamation'
     ICON_FATAL_ERROR = ':/qtutils/fugue/exclamation-red'
-
+    TIME_OUT_VALUE = None
+    
     def __init__(self,notebook,settings,restart=False):
         # Store important parameters
         self.notebook = notebook
@@ -815,39 +815,43 @@ class Tab(object):
                             from_worker = workers[worker_process][2]
                             if self.TIME_OUT_VALUE == None:
                                 try:
-                                    to_worker.put(worker_arg_list, timeout = 15)
+                                    to_worker.put(worker_arg_list, 15)
                                 except TimeoutError:
                                     try:
-                                        to_worker.put(worker_arg_list, timeout = 15)
+                                        logger.info('Connection timed out. Trying again.')
+                                        to_worker.put(worker_arg_list, 15)
                                     except TimeoutError as e:
                                         raise TimeoutError('BLACs Device thread timed out talking to worker.')
                             else:
-                                 try:
-                                     to_worker.put(worker_arg_list, timeout = self.TIME_OUT_VALUE)
-                                 except TimeoutError:
-                                     try:
-                                         to_worker.put(worker_arg_list, timeout = self.TIME_OUT_VALUE)
-                                     except TimeoutError as e:
-                                         raise TimeoutError('BLACs Device thread timed out talking to worker.')
+                                try:       
+                                    to_worker.put(worker_arg_list, self.TIME_OUT_VALUE)
+                                except TimeoutError:
+                                    try:
+                                        logger.info('Connection timed out. Trying again.')
+                                        to_worker.put(worker_arg_list, self.TIME_OUT_VALUE)
+                                    except TimeoutError:
+                                        raise TimeoutError('BLACs Device thread timed out talking to worker.')
                             self.state = '%s (%s)'%(worker_function,worker_process)
                             # Confirm that the worker got the message:
                             logger.debug('Waiting for worker to acknowledge job request')
                             if self.TIME_OUT_VALUE == None:
                                 try:
-                                    success, message, results = from_worker.get(timeout = 15)
+                                    success, message, results = from_worker.get(15)
                                 except TimeoutError:
                                     try:
-                                        success, message, results = from_worker.get(timeout = 15)
-                                    except TimeoutError as e:
+                                        logger.info('Connection timed out. Trying again.')
+                                        success, message, results = from_worker.get(15)
+                                    except TimeoutError:
                                         raise TimeoutError('BLACs Device thread timed out waiting for worker.')
                             else:
-                                 try:
-                                     success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
-                                 except TimeoutError:
-                                     try:
-                                         success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
-                                     except TimeoutError as e:
-                                         raise TimeoutError('BLACs Device thread timed out waiting for worker.')
+                                try:
+                                    success, message, results = from_worker.get(self.TIME_OUT_VALUE)
+                                except TimeoutError:
+                                    try:            
+                                        logger.info('Connection timed out. Trying again.')
+                                        success, message, results = from_worker.get(self.TIME_OUT_VALUE)
+                                    except TimeoutError:
+                                        raise TimeoutError('BLACs Device thread timed out waiting for worker.')
                             if not success:
                                 logger.info('Worker reported failure to start job')
                                 raise Exception(message)
@@ -855,20 +859,22 @@ class Tab(object):
                             logger.debug('Worker reported job started, waiting for completion')
                             if self.TIME_OUT_VALUE == None:
                                 try:
-                                    success, message, results = from_worker.get(timeout = 15)
+                                    success, message, results = from_worker.get(15)
                                 except TimeoutError:
                                     try:
-                                        success, message, results = from_worker.get(timeout = 15)
-                                    except TimeoutError as e:
+                                        logger.info('Connection timed out. Trying again.')
+                                        success, message, results = from_worker.get(15)
+                                    except TimeoutError:
                                         raise TimeoutError('BLACs Device thread timed out waiting for worker.')
                             else:
-                                 try:
-                                     success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
-                                 except TimeoutError:
-                                     try:
-                                         success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
-                                     except TimeoutError as e:
-                                         raise TimeoutError('BLACs Device thread timed out waiting for worker.')
+                                try:
+                                    success, message, results = from_worker.get(self.TIME_OUT_VALUE)
+                                except TimeoutError:
+                                    try:
+                                        logger.info('Connection timed out. Trying again.')   
+                                        success, message, results = from_worker.get(self.TIME_OUT_VALUE)
+                                    except TimeoutError:
+                                        raise TimeoutError('BLACs Device thread timed out waiting for worker.')
                             if not success:
                                 logger.info('Worker reported exception during job')
                                 now = time.strftime('%a %b %d, %H:%M:%S ',time.localtime())
@@ -969,19 +975,21 @@ class Worker(Process):
             # Report to the parent whether method lookup was successful or not:
             if self.TIME_OUT_VALUE == None:
                 try:
-                    self.to_parent.put((success,message,None),timeout = 15)
+                    self.to_parent.put((success,message,None),15)
                 except TimeoutError:
                     try:
-                         self.to_parent.put((success,message,None),timeout = 15)
-                    except TimeoutError as e:
+                        self.logger.info('Connection timed out. Trying again.')
+                        self.to_parent.put((success,message,None),15)
+                    except TimeoutError:
                         raise TimeoutError('Communication timed out in worker.')
             else:
                 try:
-                    self.to_parent.put((success,message,None),timeout = self.TIME_OUT_VALUE)
+                    self.to_parent.put((success,message,None),self.TIME_OUT_VALUE)
                 except TimeoutError:
                     try:
-                         self.to_parent.put((success,message,None),timeout = self.TIME_OUT_VALUE)
-                    except TimeoutError as e:
+                        self.logger.info('Connection timed out. Trying again.')
+                        self.to_parent.put((success,message,None),self.TIME_OUT_VALUE)
+                    except TimeoutError:
                         raise TimeoutError('Communication timed out in worker.')
             if success:
                 # Try to do the requested work:
@@ -1011,19 +1019,21 @@ class Worker(Process):
                 # and what the results were:
                 if self.TIME_OUT_VALUE == None:
                     try:
-                        self.to_parent.put((success,message,results),timeout = 15)
+                        self.to_parent.put((success,message,results),15)
                     except TimeoutError:
                         try:
-                            self.to_parent.put((success,message,results),timeout = 15)
-                        except TimeoutError as e:
+                            self.logger.info('Connection timed out. Trying again.')
+                            self.to_parent.put((success,message,results),15)
+                        except TimeoutError:
                             raise TimeoutError('Communication timed out in worker.')
                 else:
                     try:
-                        self.to_parent.put((success,message,results),timeout = self.TIME_OUT_VALUE)
+                        self.to_parent.put((success,message,results),self.TIME_OUT_VALUE)
                     except TimeoutError:
                         try:
-                             self.to_parent.put((success,message,results),timeout = self.TIME_OUT_VALUE)
-                        except TimeoutError as e:
+                            self.logger.info('Connection timed out. Trying again.')
+                            self.to_parent.put((success,message,results),self.TIME_OUT_VALUE)
+                        except TimeoutError:
                             raise TimeoutError('Communication timed out in worker.')
 
 
