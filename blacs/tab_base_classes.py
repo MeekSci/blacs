@@ -823,7 +823,6 @@ class Tab(object):
                                 except TimeoutError:
                                     try:
                                         logger.info('Connection timed out. Trying again.')
-                                        logger.debug('Connection timed out. Trying again.')
                                         to_worker.put(worker_arg_list, 30)
                                         self.state = '%s (%s)'%(worker_function,worker_process)
                                         # Confirm that the worker got the message:
@@ -841,7 +840,6 @@ class Tab(object):
                                 except TimeoutError:
                                     try:
                                         logger.info('Connection timed out. Trying again.')
-                                        logger.debug('Connection timed out. Trying again.')
                                         to_worker.put(worker_arg_list, self.TIME_OUT_VALUE)
                                         self.state = '%s (%s)'%(worker_function,worker_process)
                                         # Confirm that the worker got the message:
@@ -854,7 +852,17 @@ class Tab(object):
                                 raise Exception(message)
                             # Wait for and get the results of the work:
                             logger.debug('Worker reported job started, waiting for completion')
+                            if self.TIME_OUT_VALUE == None:
                             success, message, results = from_worker.get()
+                            else:
+                                try:
+                                    success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
+                                except TimeoutError:
+                                    try:
+                                        logger.info('Connection timed out. Trying again.')
+                                        success, message, results = from_worker.get(timeout = self.TIME_OUT_VALUE)
+                                    except TimeoutError:
+                                        raise TimeoutError('BLACs Device thread timed out waiting for worker.')
                             if not success:
                                 logger.info('Worker reported exception during job')
                                 now = time.strftime('%a %b %d, %H:%M:%S ',time.localtime())
